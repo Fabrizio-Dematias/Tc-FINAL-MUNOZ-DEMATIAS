@@ -1,0 +1,70 @@
+  0: // Código de tres direcciones generado
+  1: PROGRAMA_INICIO:
+  2: func_main:
+  3: DECLARE suma int
+  4: suma = 0
+  5: DECLARE i int
+  6: i = 0
+  7: FOR_START_1:
+  8: t1 = i < 5
+  9: if t1 goto FOR_BODY_2
+ 10: goto FOR_END_4
+ 11: FOR_BODY_2:
+ 12: t2 = suma + i
+ 13: suma = t2
+ 14: FOR_UPDATE_3:
+ 15: t3 = i + 1
+ 16: i = t3
+ 17: goto FOR_START_1
+ 18: FOR_END_4:
+ 19: DECLARE soloParES int
+ 20: soloParES = 0
+ 21: DECLARE j int
+ 22: j = 0
+ 23: FOR_START_5:
+ 24: t4 = j < 10
+ 25: if t4 goto FOR_BODY_6
+ 26: goto FOR_END_8
+ 27: FOR_BODY_6:
+ 28: DECLARE resto int
+ 29: t5 = j % 2
+ 30: resto = t5
+ 31: t6 = resto == 1
+ 32: if t6 goto THEN_9
+ 33: goto END_IF_10
+ 34: THEN_9:
+ 35: goto FOR_UPDATE_7
+ 36: END_IF_10:
+ 37: t7 = soloParES + j
+ 38: soloParES = t7
+ 39: FOR_UPDATE_7:
+ 40: t8 = j + 1
+ 41: j = t8
+ 42: goto FOR_START_5
+ 43: FOR_END_8:
+ 44: DECLARE acum int
+ 45: acum = 0
+ 46: DECLARE k int
+ 47: k = 0
+ 48: FOR_START_11:
+ 49: t9 = k < 100
+ 50: if t9 goto FOR_BODY_12
+ 51: goto FOR_END_14
+ 52: FOR_BODY_12:
+ 53: t10 = acum + k
+ 54: acum = t10
+ 55: t11 = acum > 10
+ 56: if t11 goto THEN_15
+ 57: goto END_IF_16
+ 58: THEN_15:
+ 59: goto FOR_END_14
+ 60: END_IF_16:
+ 61: FOR_UPDATE_13:
+ 62: t12 = k + 1
+ 63: k = t12
+ 64: goto FOR_START_11
+ 65: FOR_END_14:
+ 66: cout << suma
+ 67: cout << soloParES
+ 68: cout << acum
+ 69: PROGRAMA_FIN:

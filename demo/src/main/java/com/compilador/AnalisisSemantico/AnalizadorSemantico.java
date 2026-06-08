@@ -12,6 +12,7 @@ public class AnalizadorSemantico extends MiLenguajeBaseVisitor<Void> {
     private final List<String>  errores      = new ArrayList<>();
     private final List<String>  advertencias = new ArrayList<>();
     private       String        ambitoActual = "global";
+    private       int           nivelBucle   = 0;  // para validar break/continue
 
     @Override
     public Void visitDeclaracionFuncion(MiLenguajeParser.DeclaracionFuncionContext ctx) {
@@ -156,6 +157,73 @@ public class AnalizadorSemantico extends MiLenguajeBaseVisitor<Void> {
             s.usado = true;
         }
         visit(ctx.expresion());
+        return null;
+    }
+
+    @Override
+    public Void visitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) {
+        nivelBucle++;
+        visitChildren(ctx);
+        nivelBucle--;
+        return null;
+    }
+
+    @Override
+    public Void visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
+        // Si el init declara una variable, la registramos en la tabla
+        if (ctx.forInit() != null) visit(ctx.forInit());
+        if (ctx.expresion() != null) visit(ctx.expresion());
+        nivelBucle++;
+        visit(ctx.bloque());
+        nivelBucle--;
+        return null;
+    }
+
+    @Override
+    public Void visitForInitDecl(MiLenguajeParser.ForInitDeclContext ctx) {
+        String nombre  = ctx.ID().getText();
+        String tipo    = ctx.tipo().getText();
+        int    linea   = ctx.ID().getSymbol().getLine();
+        int    columna = ctx.ID().getSymbol().getCharPositionInLine();
+
+        if (tabla.existeEnAmbito(nombre, ambitoActual)) {
+            errores.add("La variable '" + nombre + "' ya está declarada en el ámbito '" + ambitoActual + "' [Línea " + linea + ":" + columna + "]");
+            return null;
+        }
+        tabla.agregar(new Simbolo(nombre, tipo, "variable", linea, columna, ambitoActual, "[for-init]"));
+        visit(ctx.expresion());
+        return null;
+    }
+
+    @Override
+    public Void visitForInitAsig(MiLenguajeParser.ForInitAsigContext ctx) {
+        String nombre = ctx.ID().getText();
+        int    linea  = ctx.ID().getSymbol().getLine();
+        Simbolo s = tabla.buscar(nombre);
+        if (s == null) {
+            errores.add("Variable '" + nombre + "' no declarada en el ámbito '" + ambitoActual + "' [Línea " + linea + "]");
+        } else {
+            s.usado = true;
+        }
+        visit(ctx.expresion());
+        return null;
+    }
+
+    @Override
+    public Void visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
+        if (nivelBucle == 0) {
+            int linea = ctx.BREAK().getSymbol().getLine();
+            errores.add("'break' fuera de un bucle [Línea " + linea + "]");
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
+        if (nivelBucle == 0) {
+            int linea = ctx.CONTINUE().getSymbol().getLine();
+            errores.add("'continue' fuera de un bucle [Línea " + linea + "]");
+        }
         return null;
     }
 

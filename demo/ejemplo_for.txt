@@ -1,0 +1,36 @@
+// Ejemplo de for, break y continue
+int main() {
+    int suma;
+    suma = 0;
+
+    // for basico
+    for (int i = 0; i < 5; i = i + 1) {
+        suma = suma + i;
+    }
+
+    // for con continue: suma solo los pares
+    int soloParES;
+    soloParES = 0;
+    for (int j = 0; j < 10; j = j + 1) {
+        int resto;
+        resto = j % 2;
+        if (resto == 1) {
+            continue;
+        }
+        soloParES = soloParES + j;
+    }
+
+    // for con break: sale cuando suma supera 10
+    int acum;
+    acum = 0;
+    for (int k = 0; k < 100; k = k + 1) {
+        acum = acum + k;
+        if (acum > 10) {
+            break;
+        }
+    }
+
+    cout << suma;
+    cout << soloParES;
+    cout << acum;
+}

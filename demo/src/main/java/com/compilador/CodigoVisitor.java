@@ -1,7 +1,9 @@
 package com.compilador;
 
 import com.compilador.Optimizacion.OptConstantFolding;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -17,6 +19,9 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     private final GeneradorCodigo gen;
     private final OptConstantFolding folder;
     private boolean enGlobal = true;
+
+    // Pila de [breakLabel, continueLabel] para soportar break/continue anidados
+    private final Deque<String[]> pilaEtiquetasBucle = new ArrayDeque<>();
 
     public CodigoVisitor(GeneradorCodigo gen) {
         this.gen    = gen;
@@ -163,6 +168,9 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         String bodyLabel  = gen.nuevaEtiqueta("WHILE_BODY");
         String endLabel   = gen.nuevaEtiqueta("WHILE_END");
 
+        // break → endLabel, continue → startLabel
+        pilaEtiquetasBucle.push(new String[]{endLabel, startLabel});
+
         gen.addEtiqueta(startLabel);
         String cond = visit(ctx.expresion());
         gen.emitir("if " + cond + " goto " + bodyLabel);
@@ -173,6 +181,82 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         gen.emitir("goto " + startLabel);
 
         gen.addEtiqueta(endLabel);
+        pilaEtiquetasBucle.pop();
+        return null;
+    }
+
+    @Override
+    public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
+        String startLabel  = gen.nuevaEtiqueta("FOR_START");
+        String bodyLabel   = gen.nuevaEtiqueta("FOR_BODY");
+        String updateLabel = gen.nuevaEtiqueta("FOR_UPDATE");
+        String endLabel    = gen.nuevaEtiqueta("FOR_END");
+
+        // Emitir init
+        if (ctx.forInit() != null) visit(ctx.forInit());
+
+        // break → endLabel, continue → updateLabel (ejecuta el update antes de repetir)
+        pilaEtiquetasBucle.push(new String[]{endLabel, updateLabel});
+
+        gen.addEtiqueta(startLabel);
+
+        // Condición (si está vacía, el bucle es infinito — goto body directo)
+        if (ctx.expresion() != null) {
+            String cond = visit(ctx.expresion());
+            gen.emitir("if " + cond + " goto " + bodyLabel);
+            gen.emitir("goto " + endLabel);
+        } else {
+            gen.emitir("goto " + bodyLabel);
+        }
+
+        gen.addEtiqueta(bodyLabel);
+        visit(ctx.bloque());
+
+        // Update
+        gen.addEtiqueta(updateLabel);
+        if (ctx.forUpdate() != null) {
+            String id  = ctx.forUpdate().ID().getText();
+            String val = visit(ctx.forUpdate().expresion());
+            gen.emitir(id + " = " + val);
+        }
+        gen.emitir("goto " + startLabel);
+
+        gen.addEtiqueta(endLabel);
+        pilaEtiquetasBucle.pop();
+        return null;
+    }
+
+    @Override
+    public String visitForInitDecl(MiLenguajeParser.ForInitDeclContext ctx) {
+        String tipo = ctx.tipo().getText();
+        String id   = ctx.ID().getText();
+        gen.emitir("DECLARE " + id + " " + tipo);
+        String val = visit(ctx.expresion());
+        gen.emitir(id + " = " + val);
+        return null;
+    }
+
+    @Override
+    public String visitForInitAsig(MiLenguajeParser.ForInitAsigContext ctx) {
+        String id  = ctx.ID().getText();
+        String val = visit(ctx.expresion());
+        gen.emitir(id + " = " + val);
+        return null;
+    }
+
+    @Override
+    public String visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
+        if (!pilaEtiquetasBucle.isEmpty()) {
+            gen.emitir("goto " + pilaEtiquetasBucle.peek()[0]);
+        }
+        return null;
+    }
+
+    @Override
+    public String visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
+        if (!pilaEtiquetasBucle.isEmpty()) {
+            gen.emitir("goto " + pilaEtiquetasBucle.peek()[1]);
+        }
         return null;
     }
 

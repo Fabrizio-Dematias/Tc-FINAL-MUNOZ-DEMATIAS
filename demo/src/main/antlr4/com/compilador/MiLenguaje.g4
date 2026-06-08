@@ -46,6 +46,9 @@ sentencia
     | sentenciaCout      // cout << x;
     | sentenciaIf        // if (x > 0) { ... }
     | sentenciaWhile     // while (x < 10) { ... }
+    | sentenciaFor       // for (int i = 0; i < 10; i = i + 1) { ... }
+    | sentenciaBreak     // break;
+    | sentenciaContinue  // continue;
     | sentenciaReturn    // return x;
     | bloque             // { ... }
     ;
@@ -75,6 +78,36 @@ parametro
 
 sentenciaReturn
     : RETURN expresion? PYC
+    ;
+
+// FOR: bucle con inicialización, condición y actualización
+// Sintaxis: for (init; condición; update) { ... }
+// Ejemplos:
+//   for (int i = 0; i < 10; i = i + 1) { ... }
+//   for (x = 0; x < n; x = x + 1) { ... }
+sentenciaFor
+    : FOR PA forInit? PYC expresion? PYC forUpdate? PC bloque
+    ;
+
+// Inicialización del for: declaración o asignación SIN punto y coma
+forInit
+    : tipo ID IGUAL expresion    # forInitDecl
+    | ID IGUAL expresion          # forInitAsig
+    ;
+
+// Actualización del for: asignación SIN punto y coma
+forUpdate
+    : ID IGUAL expresion
+    ;
+
+// BREAK: sale del bucle más cercano
+sentenciaBreak
+    : BREAK PYC
+    ;
+
+// CONTINUE: salta a la siguiente iteración del bucle más cercano
+sentenciaContinue
+    : CONTINUE PYC
     ;
 
 // TIPOS DE DATOS disponibles en el mini lenguaje
@@ -292,11 +325,13 @@ NOT : '!'  ;    // NOT lógico: !a      (invierte el valor booleano)
 // Estas palabras NO pueden usarse como nombres de variables.
 // Si el usuario escribe 'while', el lexer produce el token WHILE,
 // no el token ID, porque WHILE está definido ANTES que ID.
-FOR    : 'for'    ;     // Para futuras extensiones
-WHILE  : 'while'  ;     // Bucle mientras
-IF     : 'if'     ;     // Selección condicional
-ELSE   : 'else'   ;     // Alternativa del if
-RETURN : 'return' ;     // Para futuras funciones
+FOR      : 'for'      ;   // Bucle for
+WHILE    : 'while'    ;   // Bucle mientras
+IF       : 'if'       ;   // Selección condicional
+ELSE     : 'else'     ;   // Alternativa del if
+BREAK    : 'break'    ;   // Salir del bucle
+CONTINUE : 'continue' ;   // Siguiente iteración
+RETURN   : 'return'   ;   // Retorno de función
 
 
 // --- PALABRAS CLAVE DE TIPOS ---

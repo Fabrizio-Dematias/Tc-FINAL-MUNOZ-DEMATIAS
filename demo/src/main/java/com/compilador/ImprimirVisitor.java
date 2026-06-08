@@ -180,6 +180,61 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
+    @Override
+    public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
+        imprimir("FOR");
+        if (ctx.forInit() != null) {
+            imprimir("  INIT:");
+            nivel++;
+            visit(ctx.forInit());
+            nivel--;
+        }
+        if (ctx.expresion() != null) {
+            imprimir("  CONDICION:");
+            nivel++;
+            visit(ctx.expresion());
+            nivel--;
+        }
+        if (ctx.forUpdate() != null) {
+            imprimir("  UPDATE: " + ctx.forUpdate().ID().getText() + " = ...");
+        }
+        imprimir("  CUERPO:");
+        nivel++;
+        visit(ctx.bloque());
+        nivel--;
+        return null;
+    }
+
+    @Override
+    public String visitForInitDecl(MiLenguajeParser.ForInitDeclContext ctx) {
+        imprimir("DECL " + ctx.tipo().getText() + " " + ctx.ID().getText() + " = ...");
+        nivel++;
+        visit(ctx.expresion());
+        nivel--;
+        return null;
+    }
+
+    @Override
+    public String visitForInitAsig(MiLenguajeParser.ForInitAsigContext ctx) {
+        imprimir("ASIG " + ctx.ID().getText() + " = ...");
+        nivel++;
+        visit(ctx.expresion());
+        nivel--;
+        return null;
+    }
+
+    @Override
+    public String visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
+        imprimir("BREAK");
+        return null;
+    }
+
+    @Override
+    public String visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
+        imprimir("CONTINUE");
+        return null;
+    }
+
     // =========================================================
     //  REGLA: bloque
     //  Un bloque agrupa sentencias entre llaves { ... }
