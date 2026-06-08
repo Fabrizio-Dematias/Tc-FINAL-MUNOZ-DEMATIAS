@@ -1,0 +1,69 @@
+[  1]  INICIO:
+[  2]  fn_main:
+[  3]  DECL suma : int
+[  4]  suma = 0
+[  5]  DECL i : int
+[  6]  i = 0
+[  7]  FOR_1:
+[  8]  _t1 = 0 < 5
+[  9]  IF _t1 GOTO FOR_CUERPO_2
+[ 10]  GOTO FOR_FIN_4
+[ 11]  FOR_CUERPO_2:
+[ 12]  _t2 = 0 + 0
+[ 13]  suma = _t2
+[ 14]  FOR_UPDATE_3:
+[ 15]  _t3 = 0 + 1
+[ 16]  i = _t3
+[ 17]  GOTO FOR_1
+[ 18]  FOR_FIN_4:
+[ 19]  DECL soloParES : int
+[ 20]  soloParES = 0
+[ 21]  DECL j : int
+[ 22]  j = 0
+[ 23]  FOR_5:
+[ 24]  _t4 = 0 < 10
+[ 25]  IF _t4 GOTO FOR_CUERPO_6
+[ 26]  GOTO FOR_FIN_8
+[ 27]  FOR_CUERPO_6:
+[ 28]  DECL resto : int
+[ 29]  _t5 = 0 % 2
+[ 30]  resto = _t5
+[ 31]  _t6 = resto == 1
+[ 32]  IF _t6 GOTO THEN_9
+[ 33]  GOTO FIN_IF_10
+[ 34]  THEN_9:
+[ 35]  GOTO FOR_UPDATE_7
+[ 36]  FIN_IF_10:
+[ 37]  _t7 = 0 + 0
+[ 38]  soloParES = _t7
+[ 39]  FOR_UPDATE_7:
+[ 40]  _t8 = 0 + 1
+[ 41]  j = _t8
+[ 42]  GOTO FOR_5
+[ 43]  FOR_FIN_8:
+[ 44]  DECL acum : int
+[ 45]  acum = 0
+[ 46]  DECL k : int
+[ 47]  k = 0
+[ 48]  FOR_11:
+[ 49]  _t9 = 0 < 100
+[ 50]  IF _t9 GOTO FOR_CUERPO_12
+[ 51]  GOTO FOR_FIN_14
+[ 52]  FOR_CUERPO_12:
+[ 53]  _t10 = 0 + 0
+[ 54]  acum = _t10
+[ 55]  _t11 = acum > 10
+[ 56]  IF _t11 GOTO THEN_15
+[ 57]  GOTO FIN_IF_16
+[ 58]  THEN_15:
+[ 59]  GOTO FOR_FIN_14
+[ 60]  FIN_IF_16:
+[ 61]  FOR_UPDATE_13:
+[ 62]  _t12 = 0 + 1
+[ 63]  k = _t12
+[ 64]  GOTO FOR_11
+[ 65]  FOR_FIN_14:
+[ 66]  PRINT suma
+[ 67]  PRINT soloParES
+[ 68]  PRINT acum
+[ 69]  FIN:

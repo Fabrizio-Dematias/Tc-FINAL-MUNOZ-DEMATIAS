@@ -17,13 +17,13 @@ public class MiLenguajeLexer extends Lexer {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		PA=1, PC=2, CA=3, CC=4, LA=5, LC=6, PYC=7, COMA=8, IGUAL=9, EQL=10, DISTINTO=11, 
-		MAYOR_IGUAL=12, MENOR_IGUAL=13, MAYOR=14, MENOR=15, SHIFT_L=16, SUM=17, 
-		RES=18, MUL=19, DIV=20, MOD=21, OR=22, AND=23, NOT=24, FOR=25, WHILE=26, 
-		IF=27, ELSE=28, BREAK=29, CONTINUE=30, RETURN=31, INT=32, FLOAT=33, DOUBLE=34, 
-		CHAR=35, STRING_TYPE=36, BOOL=37, VOID=38, VERDADERO=39, FALSO=40, COUT=41, 
-		ID=42, INTEGER=43, DECIMAL=44, CHARACTER=45, CADENA=46, COMENTARIO_LINEA=47, 
-		COMENTARIO_BLOQUE=48, WS=49, OTRO=50;
+		PAREN_A=1, PAREN_C=2, CORCH_A=3, CORCH_C=4, LLAVE_A=5, LLAVE_C=6, PYCOM=7, 
+		COMA=8, OP_EQ=9, OP_NEQ=10, OP_GTE=11, OP_LTE=12, OP_FLUJO=13, OP_OR=14, 
+		OP_AND=15, OP_GT=16, OP_LT=17, OP_ASIG=18, OP_SUM=19, OP_RES=20, OP_MUL=21, 
+		OP_DIV=22, OP_MOD=23, OP_NOT=24, FOR=25, WHILE=26, IF=27, ELSE=28, BREAK=29, 
+		CONTINUE=30, RETURN=31, INT=32, FLOAT=33, DOUBLE=34, CHAR=35, STRING_TIPO=36, 
+		BOOL=37, VOID=38, TRUE=39, FALSE=40, COUT=41, ID=42, ENTERO=43, DECIMAL=44, 
+		CARACTER=45, CADENA=46, COM_LINEA=47, COM_BLOQUE=48, ESPACIOS=49, INVALIDO=50;
 	public static String[] channelNames = {
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 	};
@@ -34,36 +34,36 @@ public class MiLenguajeLexer extends Lexer {
 
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"LETRA", "DIGITO", "PA", "PC", "CA", "CC", "LA", "LC", "PYC", "COMA", 
-			"IGUAL", "EQL", "DISTINTO", "MAYOR_IGUAL", "MENOR_IGUAL", "MAYOR", "MENOR", 
-			"SHIFT_L", "SUM", "RES", "MUL", "DIV", "MOD", "OR", "AND", "NOT", "FOR", 
-			"WHILE", "IF", "ELSE", "BREAK", "CONTINUE", "RETURN", "INT", "FLOAT", 
-			"DOUBLE", "CHAR", "STRING_TYPE", "BOOL", "VOID", "VERDADERO", "FALSO", 
-			"COUT", "ID", "INTEGER", "DECIMAL", "CHARACTER", "CADENA", "COMENTARIO_LINEA", 
-			"COMENTARIO_BLOQUE", "WS", "OTRO"
+			"LETRA", "DIGITO", "PAREN_A", "PAREN_C", "CORCH_A", "CORCH_C", "LLAVE_A", 
+			"LLAVE_C", "PYCOM", "COMA", "OP_EQ", "OP_NEQ", "OP_GTE", "OP_LTE", "OP_FLUJO", 
+			"OP_OR", "OP_AND", "OP_GT", "OP_LT", "OP_ASIG", "OP_SUM", "OP_RES", "OP_MUL", 
+			"OP_DIV", "OP_MOD", "OP_NOT", "FOR", "WHILE", "IF", "ELSE", "BREAK", 
+			"CONTINUE", "RETURN", "INT", "FLOAT", "DOUBLE", "CHAR", "STRING_TIPO", 
+			"BOOL", "VOID", "TRUE", "FALSE", "COUT", "ID", "ENTERO", "DECIMAL", "CARACTER", 
+			"CADENA", "COM_LINEA", "COM_BLOQUE", "ESPACIOS", "INVALIDO"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'('", "')'", "'['", "']'", "'{'", "'}'", "';'", "','", "'='", 
-			"'=='", "'!='", "'>='", "'<='", "'>'", "'<'", "'<<'", "'+'", "'-'", "'*'", 
-			"'/'", "'%'", "'||'", "'&&'", "'!'", "'for'", "'while'", "'if'", "'else'", 
-			"'break'", "'continue'", "'return'", "'int'", "'float'", "'double'", 
+			null, "'('", "')'", "'['", "']'", "'{'", "'}'", "';'", "','", "'=='", 
+			"'!='", "'>='", "'<='", "'<<'", "'||'", "'&&'", "'>'", "'<'", "'='", 
+			"'+'", "'-'", "'*'", "'/'", "'%'", "'!'", "'for'", "'while'", "'if'", 
+			"'else'", "'break'", "'continue'", "'return'", "'int'", "'float'", "'double'", 
 			"'char'", "'string'", "'bool'", "'void'", "'true'", "'false'", "'cout'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "PA", "PC", "CA", "CC", "LA", "LC", "PYC", "COMA", "IGUAL", "EQL", 
-			"DISTINTO", "MAYOR_IGUAL", "MENOR_IGUAL", "MAYOR", "MENOR", "SHIFT_L", 
-			"SUM", "RES", "MUL", "DIV", "MOD", "OR", "AND", "NOT", "FOR", "WHILE", 
-			"IF", "ELSE", "BREAK", "CONTINUE", "RETURN", "INT", "FLOAT", "DOUBLE", 
-			"CHAR", "STRING_TYPE", "BOOL", "VOID", "VERDADERO", "FALSO", "COUT", 
-			"ID", "INTEGER", "DECIMAL", "CHARACTER", "CADENA", "COMENTARIO_LINEA", 
-			"COMENTARIO_BLOQUE", "WS", "OTRO"
+			null, "PAREN_A", "PAREN_C", "CORCH_A", "CORCH_C", "LLAVE_A", "LLAVE_C", 
+			"PYCOM", "COMA", "OP_EQ", "OP_NEQ", "OP_GTE", "OP_LTE", "OP_FLUJO", "OP_OR", 
+			"OP_AND", "OP_GT", "OP_LT", "OP_ASIG", "OP_SUM", "OP_RES", "OP_MUL", 
+			"OP_DIV", "OP_MOD", "OP_NOT", "FOR", "WHILE", "IF", "ELSE", "BREAK", 
+			"CONTINUE", "RETURN", "INT", "FLOAT", "DOUBLE", "CHAR", "STRING_TIPO", 
+			"BOOL", "VOID", "TRUE", "FALSE", "COUT", "ID", "ENTERO", "DECIMAL", "CARACTER", 
+			"CADENA", "COM_LINEA", "COM_BLOQUE", "ESPACIOS", "INVALIDO"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -133,9 +133,9 @@ public class MiLenguajeLexer extends Lexer {
 		" \4!\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\4+\t"+
 		"+\4,\t,\4-\t-\4.\t.\4/\t/\4\60\t\60\4\61\t\61\4\62\t\62\4\63\t\63\4\64"+
 		"\t\64\4\65\t\65\3\2\3\2\3\3\3\3\3\4\3\4\3\5\3\5\3\6\3\6\3\7\3\7\3\b\3"+
-		"\b\3\t\3\t\3\n\3\n\3\13\3\13\3\f\3\f\3\r\3\r\3\r\3\16\3\16\3\16\3\17\3"+
-		"\17\3\17\3\20\3\20\3\20\3\21\3\21\3\22\3\22\3\23\3\23\3\23\3\24\3\24\3"+
-		"\25\3\25\3\26\3\26\3\27\3\27\3\30\3\30\3\31\3\31\3\31\3\32\3\32\3\32\3"+
+		"\b\3\t\3\t\3\n\3\n\3\13\3\13\3\f\3\f\3\f\3\r\3\r\3\r\3\16\3\16\3\16\3"+
+		"\17\3\17\3\17\3\20\3\20\3\20\3\21\3\21\3\21\3\22\3\22\3\22\3\23\3\23\3"+
+		"\24\3\24\3\25\3\25\3\26\3\26\3\27\3\27\3\30\3\30\3\31\3\31\3\32\3\32\3"+
 		"\33\3\33\3\34\3\34\3\34\3\34\3\35\3\35\3\35\3\35\3\35\3\35\3\36\3\36\3"+
 		"\36\3\37\3\37\3\37\3\37\3\37\3 \3 \3 \3 \3 \3 \3!\3!\3!\3!\3!\3!\3!\3"+
 		"!\3!\3\"\3\"\3\"\3\"\3\"\3\"\3\"\3#\3#\3#\3#\3$\3$\3$\3$\3$\3$\3%\3%\3"+
@@ -162,10 +162,10 @@ public class MiLenguajeLexer extends Lexer {
 		"\3\2\2\2\2Y\3\2\2\2\2[\3\2\2\2\2]\3\2\2\2\2_\3\2\2\2\2a\3\2\2\2\2c\3\2"+
 		"\2\2\2e\3\2\2\2\2g\3\2\2\2\2i\3\2\2\2\3k\3\2\2\2\5m\3\2\2\2\7o\3\2\2\2"+
 		"\tq\3\2\2\2\13s\3\2\2\2\ru\3\2\2\2\17w\3\2\2\2\21y\3\2\2\2\23{\3\2\2\2"+
-		"\25}\3\2\2\2\27\177\3\2\2\2\31\u0081\3\2\2\2\33\u0084\3\2\2\2\35\u0087"+
-		"\3\2\2\2\37\u008a\3\2\2\2!\u008d\3\2\2\2#\u008f\3\2\2\2%\u0091\3\2\2\2"+
-		"\'\u0094\3\2\2\2)\u0096\3\2\2\2+\u0098\3\2\2\2-\u009a\3\2\2\2/\u009c\3"+
-		"\2\2\2\61\u009e\3\2\2\2\63\u00a1\3\2\2\2\65\u00a4\3\2\2\2\67\u00a6\3\2"+
+		"\25}\3\2\2\2\27\177\3\2\2\2\31\u0082\3\2\2\2\33\u0085\3\2\2\2\35\u0088"+
+		"\3\2\2\2\37\u008b\3\2\2\2!\u008e\3\2\2\2#\u0091\3\2\2\2%\u0094\3\2\2\2"+
+		"\'\u0096\3\2\2\2)\u0098\3\2\2\2+\u009a\3\2\2\2-\u009c\3\2\2\2/\u009e\3"+
+		"\2\2\2\61\u00a0\3\2\2\2\63\u00a2\3\2\2\2\65\u00a4\3\2\2\2\67\u00a6\3\2"+
 		"\2\29\u00aa\3\2\2\2;\u00b0\3\2\2\2=\u00b3\3\2\2\2?\u00b8\3\2\2\2A\u00be"+
 		"\3\2\2\2C\u00c7\3\2\2\2E\u00ce\3\2\2\2G\u00d2\3\2\2\2I\u00d8\3\2\2\2K"+
 		"\u00df\3\2\2\2M\u00e4\3\2\2\2O\u00eb\3\2\2\2Q\u00f0\3\2\2\2S\u00f5\3\2"+
@@ -174,16 +174,16 @@ public class MiLenguajeLexer extends Lexer {
 		"\u014e\3\2\2\2i\u0154\3\2\2\2kl\t\2\2\2l\4\3\2\2\2mn\t\3\2\2n\6\3\2\2"+
 		"\2op\7*\2\2p\b\3\2\2\2qr\7+\2\2r\n\3\2\2\2st\7]\2\2t\f\3\2\2\2uv\7_\2"+
 		"\2v\16\3\2\2\2wx\7}\2\2x\20\3\2\2\2yz\7\177\2\2z\22\3\2\2\2{|\7=\2\2|"+
-		"\24\3\2\2\2}~\7.\2\2~\26\3\2\2\2\177\u0080\7?\2\2\u0080\30\3\2\2\2\u0081"+
-		"\u0082\7?\2\2\u0082\u0083\7?\2\2\u0083\32\3\2\2\2\u0084\u0085\7#\2\2\u0085"+
-		"\u0086\7?\2\2\u0086\34\3\2\2\2\u0087\u0088\7@\2\2\u0088\u0089\7?\2\2\u0089"+
-		"\36\3\2\2\2\u008a\u008b\7>\2\2\u008b\u008c\7?\2\2\u008c \3\2\2\2\u008d"+
-		"\u008e\7@\2\2\u008e\"\3\2\2\2\u008f\u0090\7>\2\2\u0090$\3\2\2\2\u0091"+
-		"\u0092\7>\2\2\u0092\u0093\7>\2\2\u0093&\3\2\2\2\u0094\u0095\7-\2\2\u0095"+
-		"(\3\2\2\2\u0096\u0097\7/\2\2\u0097*\3\2\2\2\u0098\u0099\7,\2\2\u0099,"+
-		"\3\2\2\2\u009a\u009b\7\61\2\2\u009b.\3\2\2\2\u009c\u009d\7\'\2\2\u009d"+
-		"\60\3\2\2\2\u009e\u009f\7~\2\2\u009f\u00a0\7~\2\2\u00a0\62\3\2\2\2\u00a1"+
-		"\u00a2\7(\2\2\u00a2\u00a3\7(\2\2\u00a3\64\3\2\2\2\u00a4\u00a5\7#\2\2\u00a5"+
+		"\24\3\2\2\2}~\7.\2\2~\26\3\2\2\2\177\u0080\7?\2\2\u0080\u0081\7?\2\2\u0081"+
+		"\30\3\2\2\2\u0082\u0083\7#\2\2\u0083\u0084\7?\2\2\u0084\32\3\2\2\2\u0085"+
+		"\u0086\7@\2\2\u0086\u0087\7?\2\2\u0087\34\3\2\2\2\u0088\u0089\7>\2\2\u0089"+
+		"\u008a\7?\2\2\u008a\36\3\2\2\2\u008b\u008c\7>\2\2\u008c\u008d\7>\2\2\u008d"+
+		" \3\2\2\2\u008e\u008f\7~\2\2\u008f\u0090\7~\2\2\u0090\"\3\2\2\2\u0091"+
+		"\u0092\7(\2\2\u0092\u0093\7(\2\2\u0093$\3\2\2\2\u0094\u0095\7@\2\2\u0095"+
+		"&\3\2\2\2\u0096\u0097\7>\2\2\u0097(\3\2\2\2\u0098\u0099\7?\2\2\u0099*"+
+		"\3\2\2\2\u009a\u009b\7-\2\2\u009b,\3\2\2\2\u009c\u009d\7/\2\2\u009d.\3"+
+		"\2\2\2\u009e\u009f\7,\2\2\u009f\60\3\2\2\2\u00a0\u00a1\7\61\2\2\u00a1"+
+		"\62\3\2\2\2\u00a2\u00a3\7\'\2\2\u00a3\64\3\2\2\2\u00a4\u00a5\7#\2\2\u00a5"+
 		"\66\3\2\2\2\u00a6\u00a7\7h\2\2\u00a7\u00a8\7q\2\2\u00a8\u00a9\7t\2\2\u00a9"+
 		"8\3\2\2\2\u00aa\u00ab\7y\2\2\u00ab\u00ac\7j\2\2\u00ac\u00ad\7k\2\2\u00ad"+
 		"\u00ae\7n\2\2\u00ae\u00af\7g\2\2\u00af:\3\2\2\2\u00b0\u00b1\7k\2\2\u00b1"+

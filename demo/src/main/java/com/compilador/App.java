@@ -3,267 +3,239 @@ package com.compilador;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.gui.TreeViewer;
-import com.compilador.AnalisisSemantico.AnalizadorSemantico;
-import com.compilador.Optimizacion.OptPropagacionConstantes;
-import com.compilador.Optimizacion.OptEliminacionMuerto;
+import com.compilador.Semantico.VisitorSemantico;
+import com.compilador.Optimizacion.PropagacionConstantes;
+import com.compilador.Optimizacion.CodigoMuerto;
+
 import javax.swing.*;
-import java.util.Arrays;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Punto de entrada del compilador.
+ * Compilador de un subconjunto de C++
+ * Muñoz / Dematias — Técnicas de Compilación
  *
  * Fases:
  *   1. Análisis Léxico
- *   2. Análisis Sintáctico
- *   3. Análisis Semántico
- *   4. Generación de Código Intermedio  (+ OPT-1 Constant Folding inline)
- *   5. OPT-2 Propagación de Constantes  ← comentar para deshabilitar
- *   6. OPT-3 Eliminación de Código Muerto ← comentar para deshabilitar
+ *   2. Análisis Sintáctico  (+ árbol de parseo gráfico)
+ *   3. Análisis Semántico   (+ verificación de tipos)
+ *   4. Generación de código intermedio  (OPT-1: constant folding inline)
+ *   5. OPT-2: Propagación de constantes
+ *   6. OPT-3: Eliminación de código muerto
  *
  * Uso:
  *   java -jar demo-1.0-jar-with-dependencies.jar <archivo.txt>
  */
 public class App {
 
-    // Colores ANSI para la salida en consola
-    private static final String RESET   = "\u001B[0m";
-    private static final String VERDE   = "\u001B[32m";
-    private static final String AMARILLO= "\u001B[33m";
-    private static final String ROJO    = "\u001B[31m";
+    // Códigos de color ANSI
+    private static final String RESET = "\u001B[0m";
+    private static final String VERDE = "\u001B[32m";
+    private static final String ROJO  = "\u001B[31m";
+    private static final String AMAR  = "\u001B[33m";
+    private static final String CYAN  = "\u001B[36m";
+
+    private static void ok(String msg)   { System.out.println(VERDE + "  [OK]  " + msg + RESET); }
+    private static void err(String msg)  { System.out.println(ROJO  + "  [ERR] " + msg + RESET); }
+    private static void warn(String msg) { System.out.println(AMAR  + "  [!!]  " + msg + RESET); }
+    private static void sec(String msg)  { System.out.println(CYAN  + "\n>>> " + msg + RESET); }
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Uso: java -jar demo-1.0-jar-with-dependencies.jar <archivo.txt>");
+            System.out.println("Uso: java -jar demo-1.0-jar-with-dependencies.jar <archivo>");
             System.exit(1);
         }
 
+        String archivo = args[0];
+        System.out.println("=".repeat(60));
+        System.out.println("  Compilador C++ — Muñoz / Dematias");
+        System.out.println("  Archivo: " + archivo);
+        System.out.println("=".repeat(60));
+
         try {
-            CharStream input = CharStreams.fromFileName(args[0]);
-            System.out.println("Analizando archivo: " + args[0]);
-            System.out.println("=".repeat(65));
+            CharStream entrada = CharStreams.fromFileName(archivo);
 
-            // =========================================================
+            // =================================================================
             //  FASE 1: ANÁLISIS LÉXICO
-            // =========================================================
-            MiLenguajeLexer lexer = new MiLenguajeLexer(input);
+            // =================================================================
+            sec("FASE 1 — Análisis Léxico");
 
-            List<String> erroresLexicos = new ArrayList<>();
+            MiLenguajeLexer lexer = new MiLenguajeLexer(entrada);
+            final boolean[] hayErrorLex = {false};
+
             lexer.removeErrorListeners();
             lexer.addErrorListener(new BaseErrorListener() {
                 @Override
-                public void syntaxError(Recognizer<?, ?> recognizer,
-                                        Object offendingSymbol,
-                                        int line, int charPositionInLine,
-                                        String msg, RecognitionException e) {
-                    erroresLexicos.add("  [Línea " + line + ":" + charPositionInLine + "] " + msg);
+                public void syntaxError(Recognizer<?, ?> r, Object sym,
+                                        int linea, int col, String msg, RecognitionException e) {
+                    err("Línea " + linea + ":" + col + " — " + msg);
+                    hayErrorLex[0] = true;
                 }
             });
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             tokens.fill();
 
-            System.out.println("\n=== FASE 1: ANÁLISIS LÉXICO ===\n");
-            System.out.printf("  %-20s %-25s %-8s %-8s%n", "TIPO DE TOKEN", "LEXEMA", "LÍNEA", "COLUMNA");
-            System.out.println("  " + "-".repeat(63));
-
-            for (Token token : tokens.getTokens()) {
-                if (token.getType() == Token.EOF) continue;
-                String tipo = MiLenguajeLexer.VOCABULARY.getSymbolicName(token.getType());
-                if (tipo == null) tipo = "DESCONOCIDO";
-                System.out.printf("  %-20s %-25s %-8d %-8d%n",
-                        tipo, token.getText(), token.getLine(), token.getCharPositionInLine());
+            System.out.printf("  %-22s %-24s %-6s %-6s%n", "TOKEN", "LEXEMA", "LÍNEA", "COL");
+            System.out.println("  " + "-".repeat(60));
+            for (Token t : tokens.getTokens()) {
+                if (t.getType() == Token.EOF) continue;
+                String nombre = MiLenguajeLexer.VOCABULARY.getSymbolicName(t.getType());
+                if (nombre == null) nombre = "DESCONOCIDO";
+                System.out.printf("  %-22s %-24s %-6d %-6d%n",
+                        nombre, t.getText(), t.getLine(), t.getCharPositionInLine());
             }
 
-            if (!erroresLexicos.isEmpty()) {
-                System.out.println(ROJO + "\n  ERRORES LÉXICOS:" + RESET);
-                for (String error : erroresLexicos) System.out.println(ROJO + error + RESET);
-                System.out.println(ROJO + "\n  El análisis no puede continuar con errores léxicos." + RESET);
+            if (hayErrorLex[0]) {
+                err("Compilación detenida: errores léxicos.");
                 return;
             }
-            System.out.println(VERDE + "\n  Análisis léxico completado sin errores." + RESET);
+            ok("Análisis léxico completado.");
 
-            // =========================================================
+            // =================================================================
             //  FASE 2: ANÁLISIS SINTÁCTICO
-            // =========================================================
-            System.out.println("\n=== FASE 2: ANÁLISIS SINTÁCTICO ===\n");
+            // =================================================================
+            sec("FASE 2 — Análisis Sintáctico");
             tokens.reset();
 
             MiLenguajeParser parser = new MiLenguajeParser(tokens);
+            final boolean[] hayErrorSin = {false};
 
-            List<String> erroresSintacticos = new ArrayList<>();
             parser.removeErrorListeners();
             parser.addErrorListener(new BaseErrorListener() {
                 @Override
-                public void syntaxError(Recognizer<?, ?> recognizer,
-                                        Object offendingSymbol,
-                                        int line, int charPositionInLine,
-                                        String msg, RecognitionException e) {
-                    String tokenErroneo = (offendingSymbol != null)
-                            ? "'" + offendingSymbol + "'" : "fin de archivo";
-                    erroresSintacticos.add("  [Línea " + line + ":" + charPositionInLine + "] "
-                            + "cerca de " + tokenErroneo + " → " + msg);
+                public void syntaxError(Recognizer<?, ?> r, Object sym,
+                                        int linea, int col, String msg, RecognitionException e) {
+                    String tok = sym != null ? "'" + sym + "'" : "fin de archivo";
+                    err("Línea " + linea + ":" + col + " cerca de " + tok + " — " + msg);
+                    hayErrorSin[0] = true;
                 }
             });
 
-            MiLenguajeParser.ProgramaContext arbolParseo = parser.programa();
+            MiLenguajeParser.CodigoContext arbol = parser.codigo();
 
-            if (!erroresSintacticos.isEmpty()) {
-                System.out.println(ROJO + "  ERRORES SINTÁCTICOS:" + RESET);
-                for (String error : erroresSintacticos) System.out.println(ROJO + error + RESET);
-                System.out.println();
-                System.out.println("  Pista: revisa que cada sentencia:");
-                System.out.println("    - Termine con punto y coma ';'");
-                System.out.println("    - Tenga paréntesis balanceados");
-                System.out.println("    - Use tipos válidos (int, float, string, bool, char, double)");
+            if (hayErrorSin[0]) {
+                err("Compilación detenida: errores sintácticos.");
                 return;
             }
-            System.out.println(VERDE + "  Análisis sintáctico completado sin errores." + RESET);
 
-            // =========================================================
+            // Imprimir árbol textual
+            System.out.println();
+            new ArbolVisitor().visit(arbol);
+            ok("Análisis sintáctico completado.");
+
+            // =================================================================
             //  FASE 3: ANÁLISIS SEMÁNTICO
-            // =========================================================
-            System.out.println("\n=== FASE 3: ANÁLISIS SEMÁNTICO ===\n");
-            System.out.println("   Tabla de símbolos construida:");
+            // =================================================================
+            sec("FASE 3 — Análisis Semántico");
 
-            AnalizadorSemantico semantico = new AnalizadorSemantico();
-            semantico.visit(arbolParseo);
-            semantico.getTabla().imprimir();
+            VisitorSemantico semantico = new VisitorSemantico();
+            semantico.visit(arbol);
+            semantico.getTabla().mostrar();
 
-            if (semantico.hayErrores()) {
-                System.out.println(ROJO + "\nERRORES SEMÁNTICOS:" + RESET);
-                for (String error : semantico.getErrores()) {
-                    System.out.println(ROJO + "   Error: " + error + RESET);
-                }
-            }
-
-            if (semantico.hayAdvertencias()) {
-                System.out.println(AMARILLO + "\nWARNINGS SEMÁNTICOS:" + RESET);
-                for (String adv : semantico.getAdvertencias()) {
-                    System.out.println(AMARILLO + "   " + adv + RESET);
-                }
-                System.out.println(AMARILLO + "   El código tiene warnings, pero se puede continuar." + RESET);
-            }
+            for (String e : semantico.getErrores())  err(e);
+            for (String a : semantico.getAvisos())   warn(a);
 
             if (semantico.hayErrores()) {
-                System.out.println(ROJO + "\nCompilación detenida debido a errores semánticos." + RESET);
+                err("Compilación detenida: errores semánticos.");
                 return;
             }
+            ok("Análisis semántico completado"
+                    + (semantico.hayAvisos() ? " (con advertencias)." : "."));
 
-            if (!semantico.hayErrores() && !semantico.hayAdvertencias()) {
-                System.out.println(VERDE + "\n  Análisis semántico completado sin errores." + RESET);
-            }
-
-            // =========================================================
+            // =================================================================
             //  FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO  (+ OPT-1 inline)
-            // =========================================================
-            System.out.println("\n=== FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO ===");
-            System.out.println("   Código de tres direcciones generado:\n");
+            // =================================================================
+            sec("FASE 4 — Código Intermedio");
 
-            GeneradorCodigo gen = new GeneradorCodigo();
-            CodigoVisitor visitor = new CodigoVisitor(gen);
-            visitor.visit(arbolParseo);
+            CodigoTresDirecciones codigo = new CodigoTresDirecciones();
+            GeneradorVisitor gen = new GeneradorVisitor(codigo);
+            gen.visit(arbol);
 
-            gen.imprimir();
+            System.out.println();
+            codigo.imprimir();
 
-            String base = args[0].replace(".txt", "").replace(".cpp", "");
-            List<String> folds = visitor.getFoldLog();
+            String base = archivo.replaceAll("\\.[^.]+$", "");
+            List<String> folds = gen.getFoldLog();
+            codigo.guardarEn(base + "_cod1.txt");
+            ok("Código intermedio guardado en: " + base + "_cod1.txt");
 
-            // Guardar código tras OPT-1 (constant folding ya aplicado inline)
-            gen.guardar(base + "_opt1.txt");
-            System.out.println(VERDE + "\nOPT-1 guardado en: " + base + "_opt1.txt" + RESET);
-
-            // =========================================================
+            // =================================================================
             //  OPT-2: PROPAGACIÓN DE CONSTANTES
-            //  Para deshabilitar esta optimización, comentar el bloque.
-            // =========================================================
-            OptPropagacionConstantes opt2 = new OptPropagacionConstantes();
-            List<String> propag = opt2.optimizar(gen.getInstrucciones());
-            gen.guardar(base + "_opt2.txt");
-            System.out.println(VERDE + "OPT-2 guardado en: " + base + "_opt2.txt" + RESET);
+            //  Para deshabilitar: comentar el bloque siguiente
+            // =================================================================
+            PropagacionConstantes opt2 = new PropagacionConstantes();
+            List<String> propag = opt2.aplicar(codigo.getInstrucciones());
+            codigo.guardarEn(base + "_cod2.txt");
+            ok("OPT-2 guardado en: " + base + "_cod2.txt");
 
-            // =========================================================
+            // =================================================================
             //  OPT-3: ELIMINACIÓN DE CÓDIGO MUERTO
-            //  Para deshabilitar esta optimización, comentar el bloque.
-            // =========================================================
-            OptEliminacionMuerto opt3 = new OptEliminacionMuerto();
-            List<String> muertas = opt3.optimizar(gen.getInstrucciones());
-            gen.guardar(base + "_opt3.txt");
-            System.out.println(VERDE + "OPT-3 guardado en: " + base + "_opt3.txt" + RESET);
+            //  Para deshabilitar: comentar el bloque siguiente
+            // =================================================================
+            CodigoMuerto opt3 = new CodigoMuerto();
+            List<String> muertas = opt3.aplicar(codigo.getInstrucciones());
+            codigo.guardarEn(base + "_cod3.txt");
+            ok("OPT-3 guardado en: " + base + "_cod3.txt");
 
-            // =========================================================
-            //  RESUMEN DE OPTIMIZACIONES
-            // =========================================================
-            System.out.println("\n=== FASE 5: RESUMEN DE OPTIMIZACIONES ===");
+            // =================================================================
+            //  REPORTE DE OPTIMIZACIONES
+            // =================================================================
+            sec("FASE 5 — Resumen de Optimizaciones");
 
-            System.out.println("\n   OPT-1: Constant Folding");
-            if (!folds.isEmpty()) {
-                System.out.printf("   Expresiones simplificadas: %d%n", folds.size());
-                for (String fold : folds)
-                    System.out.println(VERDE + "      " + fold + RESET);
-            } else {
-                System.out.println(AMARILLO + "   No se encontraron expresiones literales para simplificar." + RESET);
-            }
+            System.out.println("  OPT-1: Constant Folding");
+            if (folds.isEmpty()) warn("Sin expresiones constantes para plegar.");
+            else folds.forEach(f -> System.out.println(VERDE + "    " + f + RESET));
 
-            System.out.println("\n   OPT-2: Propagación de constantes");
-            if (!propag.isEmpty()) {
-                System.out.printf("   Sustituciones realizadas: %d%n", propag.size());
-                for (String p : propag)
-                    System.out.println(VERDE + "      " + p + RESET);
-            } else {
-                System.out.println(AMARILLO + "   No se encontraron variables constantes para propagar." + RESET);
-            }
+            System.out.println("\n  OPT-2: Propagacion de Constantes");
+            if (propag.isEmpty()) warn("Sin variables constantes para propagar.");
+            else propag.forEach(p -> System.out.println(VERDE + "    " + p + RESET));
 
-            System.out.println("\n   OPT-3: Eliminación de código muerto");
-            if (!muertas.isEmpty()) {
-                System.out.printf("   Temporarias eliminadas: %d%n", muertas.size());
-                for (String m : muertas)
-                    System.out.println(VERDE + "      " + m + RESET);
-            } else {
-                System.out.println(AMARILLO + "   No se encontraron temporarias muertas para eliminar." + RESET);
-            }
+            System.out.println("\n  OPT-3: Eliminacion de Codigo Muerto");
+            if (muertas.isEmpty()) warn("Sin temporales muertas para eliminar.");
+            else muertas.forEach(m -> System.out.println(VERDE + "    eliminada: " + m + RESET));
 
-            int instrFinal    = gen.cantidadInstrucciones();
+            int instrFinal    = codigo.totalInstrucciones();
             int elimFolding   = folds.size();
             int elimMuertas   = muertas.size();
             int instrOriginal = instrFinal + elimFolding + elimMuertas;
-            double reduccion  = instrOriginal > 0 ? (100.0 - (instrFinal * 100.0 / instrOriginal)) : 0;
+            double reduccion  = instrOriginal > 0
+                    ? 100.0 - (instrFinal * 100.0 / instrOriginal) : 0;
 
-            System.out.println("\n   Resumen global:");
-            System.out.printf("      Sin optimizar:  %d instrucciones%n", instrOriginal);
-            System.out.printf("      Tras OPT-1:     %d  (-%d)%n", instrOriginal - elimFolding, elimFolding);
-            System.out.printf("      Tras OPT-3:     %d  (-%d)%n", instrFinal, elimMuertas);
-            System.out.printf("      Reducción:      %.2f%%%n", reduccion);
+            System.out.println();
+            System.out.printf("  Instrucciones originales : %d%n", instrOriginal);
+            System.out.printf("  Tras OPT-1               : %d  (-%d)%n", instrOriginal - elimFolding, elimFolding);
+            System.out.printf("  Tras OPT-3               : %d  (-%d)%n", instrFinal, elimMuertas);
+            System.out.printf("  Reduccion total          : %.1f%%%n", reduccion);
 
-            System.out.println("\n" + "=".repeat(65));
-            System.out.println(VERDE + "  Compilación exitosa." + RESET);
+            System.out.println("\n" + "=".repeat(60));
+            ok("Compilacion exitosa.");
 
-            // =========================================================
-            //  VISUALIZADOR GRÁFICO DEL ÁRBOL SINTÁCTICO
-            // =========================================================
-            System.out.println("\n  Abriendo visualizador gráfico del árbol...");
-            mostrarArbol(arbolParseo, parser);
+            // =================================================================
+            //  VISUALIZADOR GRÁFICO
+            // =================================================================
+            System.out.println("\n  Abriendo árbol sintáctico...");
+            mostrarArbol(arbol, parser);
 
         } catch (IOException e) {
-            System.err.println(ROJO + "No se pudo leer el archivo: " + e.getMessage() + RESET);
+            err("No se pudo abrir el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println(ROJO + "Error inesperado: " + e.getMessage() + RESET);
+            err("Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private static void mostrarArbol(ParseTree tree, Parser parser) {
-        JFrame frame = new JFrame("Árbol Sintáctico");
-        JPanel panel = new JPanel();
-        TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-        viewer.setScale(1.5);
-        panel.add(viewer);
-        JScrollPane scrollPane = new JScrollPane(panel);
-        frame.add(scrollPane);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setVisible(true);
+    private static void mostrarArbol(ParseTree arbol, Parser parser) {
+        JFrame ventana = new JFrame("Árbol Sintáctico — Muñoz / Dematias");
+        JPanel panel   = new JPanel();
+        TreeViewer visor = new TreeViewer(Arrays.asList(parser.getRuleNames()), arbol);
+        visor.setScale(1.4);
+        panel.add(visor);
+        JScrollPane scroll = new JScrollPane(panel);
+        ventana.add(scroll);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setSize(900, 650);
+        ventana.setVisible(true);
     }
 }
