@@ -1,6 +1,5 @@
-# Compilador TC25 - Proyecto de Técnicas de Compilación
-## Link Excel equipos
-https://docs.google.com/spreadsheets/d/12YIMpDFPy3oufa7Wrsm0iYRgHc5IuK1gO5pvEW3Szjs/edit?gid=0#gid=0
+# Compilador TC26 - Proyecto de Técnicas de Compilación
+
 ## Configuración inicial del proyecto
 
 ### Creación del proyecto Maven

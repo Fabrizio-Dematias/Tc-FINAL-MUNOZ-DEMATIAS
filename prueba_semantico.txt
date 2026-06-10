@@ -1,0 +1,58 @@
+// prueba_semantico.txt
+// Programa SINTACTICAMENTE valido con ERRORES y ADVERTENCIAS SEMANTICOS.
+// Ejercita los 8 checks del VisitorSemantico.
+//
+// Errores esperados (6):
+//   1. Variable 'base' redeclarada en ambito global
+//   2. 'break' fuera de un bucle
+//   3. 'continue' fuera de un bucle
+//   4. Variable 'z' no declarada (dentro de calcular)
+//   5. 'calcular' es funcion, no se puede asignar
+//   6. calcular() espera 2 argumentos, se pasan 3
+//
+// Advertencias esperadas (2):
+//   1. Posible incompatibilidad: string asignado a int
+//   2. Variable 'temporal' declarada pero no utilizada en 'calcular'
+
+// ----------------------------------------------------------------
+// ERROR 1: variable redeclarada en el mismo ambito
+// ----------------------------------------------------------------
+int base;
+int base;
+
+// ----------------------------------------------------------------
+// ADVERTENCIA 1: incompatibilidad de tipos (string -> int)
+// ----------------------------------------------------------------
+string mensaje;
+mensaje = "hola";
+int resultado;
+resultado = mensaje;
+
+// ----------------------------------------------------------------
+// ERROR 2 y ERROR 3: break y continue fuera de bucle
+// ----------------------------------------------------------------
+break;
+continue;
+
+// ----------------------------------------------------------------
+// Funcion que contiene ERROR 4 y ERROR 5, y genera ADVERTENCIA 2
+// ----------------------------------------------------------------
+int calcular(int a, int b) {
+    // ADVERTENCIA 2: temporal declarada pero nunca usada
+    int temporal;
+
+    // ERROR 4: variable 'z' no declarada
+    z = a + b;
+
+    // ERROR 5: 'calcular' es funcion, no se puede asignar
+    calcular = 10;
+
+    return a;
+}
+
+// ----------------------------------------------------------------
+// ERROR 6: llamada con numero incorrecto de argumentos
+// calcular espera 2, se pasan 3
+// ----------------------------------------------------------------
+int r;
+r = calcular(1, 2, 3);
