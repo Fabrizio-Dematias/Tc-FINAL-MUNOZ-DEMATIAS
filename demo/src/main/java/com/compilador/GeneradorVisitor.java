@@ -6,18 +6,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-/**
- * Generador de código de tres direcciones.
- *
- * Recorre el AST producido por el parser y emite instrucciones hacia
- * un objeto CodigoTresDirecciones. Aplica OPT-1 (Constant Folding)
- * de forma inline: si ambos operandos son literales, se evalúa en
- * tiempo de compilación sin emitir instrucción intermedia.
- *
- * Para break/continue anidados usa una pila de pares [salida, siguiente]:
- *   salida    → etiqueta de fin del bucle (destino de break)
- *   siguiente → etiqueta de inicio/update (destino de continue)
- */
 public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
 
     private final CodigoTresDirecciones codigo;
@@ -33,9 +21,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return folder.getRegistro();
     }
 
-    // -----------------------------------------------------------------------
-    //  Programa
-    // -----------------------------------------------------------------------
     @Override
     public String visitCodigo(MiLenguajeParser.CodigoContext ctx) {
         codigo.marcar("INICIO");
@@ -46,9 +31,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Funciones
-    // -----------------------------------------------------------------------
     @Override
     public String visitDefFuncion(MiLenguajeParser.DefFuncionContext ctx) {
         codigo.marcar("fn_" + ctx.ID().getText());
@@ -80,9 +62,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Declaraciones
-    // -----------------------------------------------------------------------
     @Override
     public String visitDeclSimple(MiLenguajeParser.DeclSimpleContext ctx) {
         String tipo = ctx.tipoDato().getText();
@@ -104,9 +83,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Asignaciones
-    // -----------------------------------------------------------------------
     @Override
     public String visitAsigSimple(MiLenguajeParser.AsigSimpleContext ctx) {
         String val = visit(ctx.expresion());
@@ -122,9 +98,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Salida
-    // -----------------------------------------------------------------------
     @Override
     public String visitImprimir(MiLenguajeParser.ImprimirContext ctx) {
         String val = visit(ctx.expresion());
@@ -132,9 +105,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Condicional
-    // -----------------------------------------------------------------------
     @Override
     public String visitCondicional(MiLenguajeParser.CondicionalContext ctx) {
         String cond    = visit(ctx.expresion());
@@ -158,9 +128,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Bucle WHILE
-    // -----------------------------------------------------------------------
     @Override
     public String visitBucleWhile(MiLenguajeParser.BucleWhileContext ctx) {
         String lblInicio = codigo.nuevaEtiqueta("WHILE_");
@@ -182,9 +149,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Bucle FOR
-    // -----------------------------------------------------------------------
     @Override
     public String visitBucleFor(MiLenguajeParser.BucleForContext ctx) {
         String lblInicio  = codigo.nuevaEtiqueta("FOR_");
@@ -192,7 +156,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         String lblUpdate  = codigo.nuevaEtiqueta("FOR_UPDATE_");
         String lblFin     = codigo.nuevaEtiqueta("FOR_FIN_");
 
-        // continue → update, break → fin
         pilaBucles.push(new String[]{lblFin, lblUpdate});
 
         if (ctx.inicFor() != null) visit(ctx.inicFor());
@@ -256,9 +219,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-    // -----------------------------------------------------------------------
-    //  Expresiones primarias
-    // -----------------------------------------------------------------------
     @Override public String visitVariable(MiLenguajeParser.VariableContext ctx)         { return ctx.ID().getText(); }
     @Override public String visitLitEntero(MiLenguajeParser.LitEnteroContext ctx)        { return ctx.ENTERO().getText(); }
     @Override public String visitLitDecimal(MiLenguajeParser.LitDecimalContext ctx)      { return ctx.DECIMAL().getText(); }
@@ -304,9 +264,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
         return temp;
     }
 
-    // -----------------------------------------------------------------------
-    //  Operaciones binarias — con constant folding inline
-    // -----------------------------------------------------------------------
     private String opBinaria(String izq, String op, String der) {
         String plegado = folder.evaluar(izq, op, der);
         if (plegado != null) return plegado;

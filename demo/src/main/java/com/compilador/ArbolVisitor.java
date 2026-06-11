@@ -1,11 +1,5 @@
 package com.compilador;
 
-/**
- * ArbolVisitor — imprime el árbol sintáctico en la consola con indentación.
- *
- * Cada nodo del AST se representa con su tipo y, cuando corresponde,
- * el valor del token. La indentación refleja la jerarquía del árbol.
- */
 public class ArbolVisitor extends MiLenguajeBaseVisitor<Void> {
 
     private int nivel = 0;
@@ -126,7 +120,6 @@ public class ArbolVisitor extends MiLenguajeBaseVisitor<Void> {
         return null;
     }
 
-    // Expresiones
     @Override public Void visitExprOr(MiLenguajeParser.ExprOrContext ctx)
         { nodo("[OR]"); nivel++; visitChildren(ctx); nivel--; return null; }
     @Override public Void visitExprAnd(MiLenguajeParser.ExprAndContext ctx)

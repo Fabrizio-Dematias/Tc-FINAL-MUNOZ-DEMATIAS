@@ -25,7 +25,7 @@ public class VisitorSemantico extends MiLenguajeBaseVisitor<String> {
     private final List<String>    avisos  = new ArrayList<>();
 
     private String ambitoActual = "global";
-    private int    profBucle    = 0;     // profundidad de bucles anidados
+    private int    profBucle    = 0;
 
     // -----------------------------------------------------------------------
     //  Tipos numéricos — son compatibles entre sí en operaciones aritméticas

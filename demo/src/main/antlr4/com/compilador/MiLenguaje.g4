@@ -117,15 +117,15 @@ bloque
 //  (menor precedencia arriba, mayor abajo)
 // ============================================================
 expresion
-    : expresion OP_OR expresion                                           # exprOr
-    | expresion OP_AND expresion                                          # exprAnd
-    | expresion (OP_EQ | OP_NEQ) expresion                               # exprIgualdad
-    | expresion (OP_GT | OP_LT | OP_GTE | OP_LTE) expresion             # exprRelacional
-    | expresion (OP_SUM | OP_RES) expresion                              # exprAditiva
-    | expresion (OP_MUL | OP_DIV | OP_MOD) expresion                    # exprMultiplicativa
-    | OP_NOT expresion                                                    # exprNegacion
-    | OP_RES expresion                                                    # exprNegativo
-    | PAREN_A expresion PAREN_C                                          # exprGrupo
+    : OP_NOT expresion                                       # exprNegacion
+    | OP_RES expresion                                       # exprNegativo
+    | expresion (OP_MUL | OP_DIV | OP_MOD) expresion         # exprMultiplicativa
+    | expresion (OP_SUM | OP_RES) expresion                  # exprAditiva
+    | expresion (OP_GT | OP_LT | OP_GTE | OP_LTE) expresion  # exprRelacional
+    | expresion (OP_EQ | OP_NEQ) expresion                   # exprIgualdad
+    | expresion OP_AND expresion                             # exprAnd
+    | expresion OP_OR expresion                              # exprOr
+    | PAREN_A expresion PAREN_C                              # exprGrupo
     | ENTERO                                                              # litEntero
     | DECIMAL                                                             # litDecimal
     | CARACTER                                                            # litCaracter
