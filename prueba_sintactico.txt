@@ -1,25 +1,12 @@
-// prueba_sintactico.txt
-// Programa con ERRORES SINTACTICOS intencionales.
-// ANTLR aplica error recovery y reporta los 3 errores antes de detenerse.
-
-// ----------------------------------------------------------------
-// ERROR 1: falta ';' al final de la declaracion
-// Mensaje esperado: missing ';' at 'int'
-// ----------------------------------------------------------------
+// ERROR 1:
 int contador = 0
 int limite = 10;
 
-// ----------------------------------------------------------------
-// ERROR 2: falta ')' de cierre en la condicion del while
-// Mensaje esperado: missing ')' at '{'
-// ----------------------------------------------------------------
+// ERROR 2:
 while (contador < limite {
     contador = contador + 1;
 }
 
-// ----------------------------------------------------------------
-// ERROR 3: falta el operando derecho de la multiplicacion
-// Mensaje esperado: mismatched input ';'
-// ----------------------------------------------------------------
+// ERROR 3:
 int resultado;
 resultado = limite * ;

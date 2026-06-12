@@ -23,23 +23,15 @@ import java.util.regex.Pattern;
  */
 public class CodigoMuerto {
 
-    /**
-     * Aplica la optimización sobre la lista de instrucciones (modifica en el lugar).
-     *
-     * @param instrucciones lista de instrucciones de código intermedio
-     * @return lista de instrucciones que fueron eliminadas
-     */
     public List<String> aplicar(List<String> instrucciones) {
         Pattern patTemp = Pattern.compile("^(_t\\d+)\\s*=");
 
-        // Paso 1: recopilar todas las temporales que se asignan
         Set<String> asignadas = new HashSet<>();
         for (String linea : instrucciones) {
             Matcher m = patTemp.matcher(linea.trim());
             if (m.find()) asignadas.add(m.group(1));
         }
 
-        // Paso 2: determinar cuáles son usadas como operandos
         Set<String> usadas = new HashSet<>();
         for (String temp : asignadas) {
             for (String linea : instrucciones) {
@@ -48,8 +40,6 @@ public class CodigoMuerto {
                 if (trim.contains(temp)) { usadas.add(temp); break; }
             }
         }
-
-        // Paso 3: eliminar las asignaciones de temporales muertas
         Set<String> muertas = new HashSet<>(asignadas);
         muertas.removeAll(usadas);
 

@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class App {
 
-    // Códigos de color ANSI
     private static final String RESET = "\u001B[0m";
     private static final String VERDE = "\u001B[32m";
     private static final String ROJO  = "\u001B[31m";
@@ -163,7 +162,6 @@ public class App {
 
             // =================================================================
             //  OPT-2: PROPAGACIÓN DE CONSTANTES
-            //  Para deshabilitar: comentar el bloque siguiente
             // =================================================================
             PropagacionConstantes opt2 = new PropagacionConstantes();
             List<String> propag = opt2.aplicar(codigo.getInstrucciones());
@@ -172,16 +170,12 @@ public class App {
 
             // =================================================================
             //  OPT-3: ELIMINACIÓN DE CÓDIGO MUERTO
-            //  Para deshabilitar: comentar el bloque siguiente
             // =================================================================
             CodigoMuerto opt3 = new CodigoMuerto();
             List<String> muertas = opt3.aplicar(codigo.getInstrucciones());
             codigo.guardarEn(base + "_cod3.txt");
             ok("OPT-3 guardado en: " + base + "_cod3.txt");
 
-            // =================================================================
-            //  REPORTE DE OPTIMIZACIONES
-            // =================================================================
             sec("FASE 5 — Resumen de Optimizaciones");
 
             System.out.println("  OPT-1: Constant Folding");
@@ -212,9 +206,6 @@ public class App {
             System.out.println("\n" + "=".repeat(60));
             ok("Compilacion exitosa.");
 
-            // =================================================================
-            //  VISUALIZADOR GRÁFICO
-            // =================================================================
             System.out.println("\n  Abriendo árbol sintáctico...");
             mostrarArbol(arbol, parser);
 

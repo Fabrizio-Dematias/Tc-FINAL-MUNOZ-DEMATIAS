@@ -1,8 +1,3 @@
-// prueba_correcto.txt
-// Programa SIN errores que ejercita todas las funcionalidades del compilador:
-//   tipos, funciones, arreglos, while, for, break, continue, cout,
-//   expresiones logicas, constant folding.
-
 // ----------------------------------------------------------------
 // Funcion: retorna el mayor de dos enteros
 // ----------------------------------------------------------------
@@ -30,7 +25,6 @@ int sumatoria(int n) {
 // ----------------------------------------------------------------
 int main() {
 
-    // Variables de distintos tipos
     int    x;
     int    y;
     double pi;
@@ -40,14 +34,12 @@ int main() {
     pi    = 3.14;
     letra = 'Z';
 
-    // Arreglo con acceso indexado
     int datos[4];
     datos[0] = 3;
     datos[1] = 6;
     datos[2] = 9;
     datos[3] = 12;
 
-    // while: suma todos los elementos del arreglo
     int idx;
     idx = 0;
     int sumaArr;
@@ -57,7 +49,6 @@ int main() {
         idx = idx + 1;
     }
 
-    // for + continue: acumula solo los pares de 0..9
     int pares;
     pares = 0;
     for (int k = 0; k < 10; k = k + 1) {
@@ -69,7 +60,6 @@ int main() {
         pares = pares + k;
     }
 
-    // for + break: sale cuando el acumulado supera 15
     int acum;
     acum = 0;
     for (int j = 0; j < 100; j = j + 1) {
@@ -78,22 +68,17 @@ int main() {
             break;
         }
     }
-
-    // Constant folding: 6 * 7 se evalua en compilacion -> 42
     int plegado;
     plegado = 6 * 7;
 
-    // Llamadas a funciones
     int mx;
     mx = maximo(x, y);
     int st;
     st = sumatoria(5);
 
-    // Expresion logica
     bool cond;
     cond = x > 0 && y < 100;
 
-    // Salidas
     cout << sumaArr;
     cout << pares;
     cout << acum;

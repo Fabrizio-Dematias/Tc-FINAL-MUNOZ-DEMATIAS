@@ -24,12 +24,6 @@ import java.util.regex.Pattern;
  */
 public class PropagacionConstantes {
 
-    /**
-     * Aplica la optimización sobre la lista de instrucciones (modifica en el lugar).
-     *
-     * @param instrucciones lista de instrucciones de código intermedio
-     * @return lista con las sustituciones realizadas para mostrar en el reporte
-     */
     public List<String> aplicar(List<String> instrucciones) {
         Pattern patAsig = Pattern.compile("^([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*(.+)$");
         Map<String, String> constantes = new HashMap<>();

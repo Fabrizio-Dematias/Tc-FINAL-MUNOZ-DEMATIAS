@@ -19,14 +19,6 @@ public class FoldingConstantes {
 
     private final List<String> registro = new ArrayList<>();
 
-    /**
-     * Intenta evaluar la operación con dos operandos literales.
-     * Retorna el resultado como String, o null si no es posible plegar.
-     *
-     * @param izq operando izquierdo
-     * @param op  operador aritmético (+, -, *, /, %)
-     * @param der operando derecho
-     */
     public String evaluar(String izq, String op, String der) {
         try {
             double a = Double.parseDouble(izq);
