@@ -1,6 +1,5 @@
 package com.compilador;
 
-import com.compilador.Optimizacion.FoldingConstantes;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -9,16 +8,10 @@ import java.util.List;
 public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
 
     private final CodigoTresDirecciones codigo;
-    private final FoldingConstantes     folder;
     private final Deque<String[]>       pilaBucles = new ArrayDeque<>();
 
     public GeneradorVisitor(CodigoTresDirecciones codigo) {
-        this.codigo  = codigo;
-        this.folder  = new FoldingConstantes();
-    }
-
-    public List<String> getFoldLog() {
-        return folder.getRegistro();
+        this.codigo = codigo;
     }
 
     @Override
@@ -265,8 +258,6 @@ public class GeneradorVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     private String opBinaria(String izq, String op, String der) {
-        String plegado = folder.evaluar(izq, op, der);
-        if (plegado != null) return plegado;
         String temp = codigo.nuevaTemp();
         codigo.emitir(temp + " = " + izq + " " + op + " " + der);
         return temp;

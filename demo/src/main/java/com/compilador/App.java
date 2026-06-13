@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.gui.TreeViewer;
 import com.compilador.Semantico.VisitorSemantico;
+import com.compilador.Optimizacion.FoldingConstantes;
 import com.compilador.Optimizacion.PropagacionConstantes;
 import com.compilador.Optimizacion.CodigoMuerto;
 
@@ -12,21 +13,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Compilador de un subconjunto de C++
- * Muñoz / Dematias — Técnicas de Compilación
- *
- * Fases:
- *   1. Análisis Léxico
- *   2. Análisis Sintáctico  (+ árbol de parseo gráfico)
- *   3. Análisis Semántico   (+ verificación de tipos)
- *   4. Generación de código intermedio  (OPT-1: constant folding inline)
- *   5. OPT-2: Propagación de constantes
- *   6. OPT-3: Eliminación de código muerto
- *
- * Uso:
- *   java -jar demo-1.0-jar-with-dependencies.jar <archivo.txt>
- */
 public class App {
 
     private static final String RESET = "\u001B[0m";
@@ -144,9 +130,9 @@ public class App {
                     + (semantico.hayAvisos() ? " (con advertencias)." : "."));
 
             // =================================================================
-            //  FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO  (+ OPT-1 inline)
+            //  FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO
             // =================================================================
-            sec("FASE 4 — Código Intermedio");
+            sec("FASE 4 — Código Intermedio (sin optimizaciones)");
 
             CodigoTresDirecciones codigo = new CodigoTresDirecciones();
             GeneradorVisitor gen = new GeneradorVisitor(codigo);
@@ -156,52 +142,77 @@ public class App {
             codigo.imprimir();
 
             String base = archivo.replaceAll("\\.[^.]+$", "");
-            List<String> folds = gen.getFoldLog();
+            codigo.guardarEn(base + "_cod0.txt");
+            ok("Código intermedio (raw) guardado en: " + base + "_cod0.txt");
+
+            int instrOriginal = codigo.totalInstrucciones();
+
+            // =================================================================
+            //  OPT-1: CONSTANT FOLDING
+            // =================================================================
+            sec("OPT-1 — Constant Folding");
+
+            FoldingConstantes opt1 = new FoldingConstantes();
+            List<String> folds = opt1.aplicar(codigo.getInstrucciones());
+
+            if (folds.isEmpty()) warn("Sin expresiones constantes para plegar.");
+            else folds.forEach(f -> System.out.println(VERDE + "    " + f + RESET));
+
+            System.out.println();
+            codigo.imprimir();
             codigo.guardarEn(base + "_cod1.txt");
-            ok("Código intermedio guardado en: " + base + "_cod1.txt");
+            ok("OPT-1 guardado en: " + base + "_cod1.txt");
 
             // =================================================================
             //  OPT-2: PROPAGACIÓN DE CONSTANTES
             // =================================================================
+            sec("OPT-2 — Propagación de Constantes");
+
             PropagacionConstantes opt2 = new PropagacionConstantes();
             List<String> propag = opt2.aplicar(codigo.getInstrucciones());
+
+            if (propag.isEmpty()) warn("Sin variables constantes para propagar.");
+            else propag.forEach(p -> System.out.println(VERDE + "    " + p + RESET));
+
+            System.out.println();
+            codigo.imprimir();
             codigo.guardarEn(base + "_cod2.txt");
             ok("OPT-2 guardado en: " + base + "_cod2.txt");
 
             // =================================================================
             //  OPT-3: ELIMINACIÓN DE CÓDIGO MUERTO
             // =================================================================
+            sec("OPT-3 — Eliminación de Código Muerto");
+
             CodigoMuerto opt3 = new CodigoMuerto();
             List<String> muertas = opt3.aplicar(codigo.getInstrucciones());
-            codigo.guardarEn(base + "_cod3.txt");
-            ok("OPT-3 guardado en: " + base + "_cod3.txt");
 
-            sec("FASE 5 — Resumen de Optimizaciones");
-
-            System.out.println("  OPT-1: Constant Folding");
-            if (folds.isEmpty()) warn("Sin expresiones constantes para plegar.");
-            else folds.forEach(f -> System.out.println(VERDE + "    " + f + RESET));
-
-            System.out.println("\n  OPT-2: Propagacion de Constantes");
-            if (propag.isEmpty()) warn("Sin variables constantes para propagar.");
-            else propag.forEach(p -> System.out.println(VERDE + "    " + p + RESET));
-
-            System.out.println("\n  OPT-3: Eliminacion de Codigo Muerto");
             if (muertas.isEmpty()) warn("Sin temporales muertas para eliminar.");
             else muertas.forEach(m -> System.out.println(VERDE + "    eliminada: " + m + RESET));
 
-            int instrFinal    = codigo.totalInstrucciones();
-            int elimFolding   = folds.size();
-            int elimMuertas   = muertas.size();
-            int instrOriginal = instrFinal + elimFolding + elimMuertas;
-            double reduccion  = instrOriginal > 0
+            System.out.println();
+            codigo.imprimir();
+            codigo.guardarEn(base + "_cod3.txt");
+            ok("OPT-3 guardado en: " + base + "_cod3.txt");
+
+            // =================================================================
+            sec("FASE 5 — Resumen de Optimizaciones");
+
+            int instrFinal   = codigo.totalInstrucciones();
+            int elimFolding  = folds.size();
+            int elimMuertas  = muertas.size();
+            double reduccion = instrOriginal > 0
                     ? 100.0 - (instrFinal * 100.0 / instrOriginal) : 0;
 
             System.out.println();
-            System.out.printf("  Instrucciones originales : %d%n", instrOriginal);
-            System.out.printf("  Tras OPT-1               : %d  (-%d)%n", instrOriginal - elimFolding, elimFolding);
-            System.out.printf("  Tras OPT-3               : %d  (-%d)%n", instrFinal, elimMuertas);
-            System.out.printf("  Reduccion total          : %.1f%%%n", reduccion);
+            System.out.printf("  Instrucciones originales (sin opt.)  : %d%n", instrOriginal);
+            System.out.printf("  Tras OPT-1 (Constant Folding)        : %d  (-%d)%n",
+                    instrOriginal - elimFolding, elimFolding);
+            System.out.printf("  Tras OPT-2 (Propagacion)             : %d%n",
+                    instrOriginal - elimFolding);
+            System.out.printf("  Tras OPT-3 (Codigo Muerto)           : %d  (-%d)%n",
+                    instrFinal, elimMuertas);
+            System.out.printf("  Reduccion total                      : %.1f%%%n", reduccion);
 
             System.out.println("\n" + "=".repeat(60));
             ok("Compilacion exitosa.");

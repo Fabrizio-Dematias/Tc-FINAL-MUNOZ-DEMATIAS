@@ -1,12 +1,23 @@
 
-// Variables globales
+// ============================================================
+// Variables globales — distintos tipos
+// ============================================================
 int contadorGlobal;
 double valorPi;
+float temperatura;
 char inicial;
 bool activo;
+string mensaje;
+
+// Expresión constante plegable (OPT-1): 3 + 2 = 5
 int suma = 3 + 2;
 
-// Función simple que retorna valor
+// Expresión constante en cadena (OPT-1): (4 * 5) - 3 = 17
+int resultado_constante = 4 * 5 - 3;
+
+// ============================================================
+// Función auxiliar
+// ============================================================
 int sumar(int a, int b) {
     int resultado;
     resultado = a + b;
@@ -14,44 +25,91 @@ int sumar(int a, int b) {
     return resultado;
 }
 
+// ============================================================
 // Función main
+// ============================================================
 int main() {
+    // Declaraciones de distintos tipos
     int estado;
     int temp;
+    float promedio;
+    double peso;
+    char letra;
+    bool bandera;
     int numeros[3];
-    
-    contadorGlobal = 0;
-    valorPi = 3.14;
-    inicial = 'M';
 
+    // Inicializaciones
+    contadorGlobal = 0;
+    valorPi        = 3.14;
+    temperatura    = 36.6;
+    inicial        = 'M';
+    activo         = true;
+    bandera        = false;
+    letra          = 'Z';
+    peso           = 72.5;
+
+    // Operaciones con arrays
     numeros[0] = 10;
     numeros[1] = 20;
     numeros[2] = 30;
-    
+
     temp = numeros[0] + numeros[1];
     temp = temp * 2;
     temp = temp / 3;
     temp = temp % 5;
-    
+
+    // Llamada a función
     estado = sumar(temp, 5);
-    
+
+    // Reasignaciones con distintos tipos
     contadorGlobal = estado;
-    valorPi = temp;
-    inicial = 'X';
-    
+    valorPi        = temp;
+    inicial        = 'X';
+
+    // Condicional
     if (estado > 0) {
         int auxiliar;
         auxiliar = estado + 10;
         estado = auxiliar;
     }
 
+    // Propagación de constantes (OPT-2):
+    // velocidad = 60  →  limite usa 60 directamente
     int velocidad = 60;
     int limite;
     limite = velocidad;
 
+    // Negación unaria
     int base = 10;
     int negado;
     negado = -base;
+
+    // Expresión constante plegable en cadena:
+    // 8 * 3 = 24, 24 - 4 = 20, 20 / 5 = 4 (OPT-1 en cascada)
+    int cadena_folds;
+    cadena_folds = 8 * 3 - 4;
+
+    // Propagación de bool (OPT-2)
+    bool flag = true;
+    bool resultado_bool;
+    resultado_bool = flag;
+
+    // Operaciones relacionales y lógicas
+    int x = 15;
+    int y = 7;
+    int z;
+    z = x + y;
+
+    if (z > 20) {
+        promedio = z + 1;
+    }
+
+    // Imprimir resultados
+    cout << estado;
+    cout << limite;
+    cout << negado;
+    cout << cadena_folds;
+    cout << z;
 
     return estado;
 }

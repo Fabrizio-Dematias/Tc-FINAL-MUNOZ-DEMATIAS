@@ -1,0 +1,104 @@
+[  1]  INICIO:
+[  2]  DECL contadorGlobal : int
+[  3]  DECL valorPi : double
+[  4]  DECL temperatura : float
+[  5]  DECL inicial : char
+[  6]  DECL activo : bool
+[  7]  DECL mensaje : string
+[  8]  DECL suma : int
+[  9]  _t1 = 3 + 2
+[ 10]  suma = _t1
+[ 11]  DECL resultado_constante : int
+[ 12]  _t2 = 4 * 5
+[ 13]  _t3 = _t2 - 3
+[ 14]  resultado_constante = _t3
+[ 15]  fn_sumar:
+[ 16]  PARAM a:int
+[ 17]  PARAM b:int
+[ 18]  DECL resultado : int
+[ 19]  _t4 = a + b
+[ 20]  resultado = _t4
+[ 21]  _t5 = contadorGlobal + 1
+[ 22]  contadorGlobal = _t5
+[ 23]  RET resultado
+[ 24]  fn_main:
+[ 25]  DECL estado : int
+[ 26]  DECL temp : int
+[ 27]  DECL promedio : float
+[ 28]  DECL peso : double
+[ 29]  DECL letra : char
+[ 30]  DECL bandera : bool
+[ 31]  DECL numeros[3] : int
+[ 32]  contadorGlobal = 0
+[ 33]  valorPi = 3.14
+[ 34]  temperatura = 36.6
+[ 35]  inicial = 'M'
+[ 36]  activo = true
+[ 37]  bandera = false
+[ 38]  letra = 'Z'
+[ 39]  peso = 72.5
+[ 40]  numeros[0] = 10
+[ 41]  numeros[1] = 20
+[ 42]  numeros[2] = 30
+[ 43]  _t6 = numeros[0]
+[ 44]  _t7 = numeros[1]
+[ 45]  _t8 = _t6 + _t7
+[ 46]  temp = _t8
+[ 47]  _t9 = temp * 2
+[ 48]  temp = _t9
+[ 49]  _t10 = temp / 3
+[ 50]  temp = _t10
+[ 51]  _t11 = temp % 5
+[ 52]  temp = _t11
+[ 53]  CALL fn_sumar, temp, 5
+[ 54]  estado = RET_VAL
+[ 55]  contadorGlobal = estado
+[ 56]  valorPi = temp
+[ 57]  inicial = 'X'
+[ 58]  _t12 = estado > 0
+[ 59]  IF _t12 GOTO THEN_1
+[ 60]  GOTO FIN_IF_2
+[ 61]  THEN_1:
+[ 62]  DECL auxiliar : int
+[ 63]  _t13 = estado + 10
+[ 64]  auxiliar = _t13
+[ 65]  estado = auxiliar
+[ 66]  FIN_IF_2:
+[ 67]  DECL velocidad : int
+[ 68]  velocidad = 60
+[ 69]  DECL limite : int
+[ 70]  limite = velocidad
+[ 71]  DECL base : int
+[ 72]  base = 10
+[ 73]  DECL negado : int
+[ 74]  _t14 = -base
+[ 75]  negado = _t14
+[ 76]  DECL cadena_folds : int
+[ 77]  _t15 = 8 * 3
+[ 78]  _t16 = _t15 - 4
+[ 79]  cadena_folds = _t16
+[ 80]  DECL flag : bool
+[ 81]  flag = true
+[ 82]  DECL resultado_bool : bool
+[ 83]  resultado_bool = flag
+[ 84]  DECL x : int
+[ 85]  x = 15
+[ 86]  DECL y : int
+[ 87]  y = 7
+[ 88]  DECL z : int
+[ 89]  _t17 = x + y
+[ 90]  z = _t17
+[ 91]  _t18 = z > 20
+[ 92]  IF _t18 GOTO THEN_3
+[ 93]  GOTO FIN_IF_4
+[ 94]  THEN_3:
+[ 95]  _t19 = z + 1
+[ 96]  promedio = _t19
+[ 97]  FIN_IF_4:
+[ 98]  PRINT estado
+[ 99]  PRINT limite
+[100]  PRINT negado
+[101]  PRINT cadena_folds
+[102]  PRINT z
+[103]  RET estado
+[104]  FIN:

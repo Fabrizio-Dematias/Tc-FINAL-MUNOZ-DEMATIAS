@@ -1,0 +1,99 @@
+[  1]  INICIO:
+[  2]  DECL contadorGlobal : int
+[  3]  DECL valorPi : double
+[  4]  DECL temperatura : float
+[  5]  DECL inicial : char
+[  6]  DECL activo : bool
+[  7]  DECL mensaje : string
+[  8]  DECL suma : int
+[  9]  suma = 5
+[ 10]  DECL resultado_constante : int
+[ 11]  resultado_constante = 17
+[ 12]  fn_sumar:
+[ 13]  PARAM a:int
+[ 14]  PARAM b:int
+[ 15]  DECL resultado : int
+[ 16]  _t4 = a + b
+[ 17]  resultado = _t4
+[ 18]  _t5 = contadorGlobal + 1
+[ 19]  contadorGlobal = _t5
+[ 20]  RET resultado
+[ 21]  fn_main:
+[ 22]  DECL estado : int
+[ 23]  DECL temp : int
+[ 24]  DECL promedio : float
+[ 25]  DECL peso : double
+[ 26]  DECL letra : char
+[ 27]  DECL bandera : bool
+[ 28]  DECL numeros[3] : int
+[ 29]  contadorGlobal = 0
+[ 30]  valorPi = 3.14
+[ 31]  temperatura = 36.6
+[ 32]  inicial = 'M'
+[ 33]  activo = true
+[ 34]  bandera = false
+[ 35]  letra = 'Z'
+[ 36]  peso = 72.5
+[ 37]  numeros[0] = 10
+[ 38]  numeros[1] = 20
+[ 39]  numeros[2] = 30
+[ 40]  _t6 = numeros[0]
+[ 41]  _t7 = numeros[1]
+[ 42]  _t8 = _t6 + _t7
+[ 43]  temp = _t8
+[ 44]  _t9 = temp * 2
+[ 45]  temp = _t9
+[ 46]  _t10 = temp / 3
+[ 47]  temp = _t10
+[ 48]  _t11 = temp % 5
+[ 49]  temp = _t11
+[ 50]  CALL fn_sumar, temp, 5
+[ 51]  estado = RET_VAL
+[ 52]  contadorGlobal = estado
+[ 53]  valorPi = temp
+[ 54]  inicial = 'X'
+[ 55]  _t12 = estado > 0
+[ 56]  IF _t12 GOTO THEN_1
+[ 57]  GOTO FIN_IF_2
+[ 58]  THEN_1:
+[ 59]  DECL auxiliar : int
+[ 60]  _t13 = estado + 10
+[ 61]  auxiliar = _t13
+[ 62]  estado = auxiliar
+[ 63]  FIN_IF_2:
+[ 64]  DECL velocidad : int
+[ 65]  velocidad = 60
+[ 66]  DECL limite : int
+[ 67]  limite = 60
+[ 68]  DECL base : int
+[ 69]  base = 10
+[ 70]  DECL negado : int
+[ 71]  _t14 = -10
+[ 72]  negado = -10
+[ 73]  DECL cadena_folds : int
+[ 74]  cadena_folds = 20
+[ 75]  DECL flag : bool
+[ 76]  flag = true
+[ 77]  DECL resultado_bool : bool
+[ 78]  resultado_bool = true
+[ 79]  DECL x : int
+[ 80]  x = 15
+[ 81]  DECL y : int
+[ 82]  y = 7
+[ 83]  DECL z : int
+[ 84]  _t17 = 15 + 7
+[ 85]  z = _t17
+[ 86]  _t18 = z > 20
+[ 87]  IF _t18 GOTO THEN_3
+[ 88]  GOTO FIN_IF_4
+[ 89]  THEN_3:
+[ 90]  _t19 = z + 1
+[ 91]  promedio = _t19
+[ 92]  FIN_IF_4:
+[ 93]  PRINT estado
+[ 94]  PRINT 60
+[ 95]  PRINT -10
+[ 96]  PRINT 20
+[ 97]  PRINT z
+[ 98]  RET estado
+[ 99]  FIN:
